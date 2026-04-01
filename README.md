@@ -4,19 +4,19 @@ Link to case study: https://8weeksqlchallenge.com/case-study-5/
 ## Case Study Solutions
 ### Section 1: Data Cleansing
 I created a new table clean_weekly_sales where I:
-  Converted week_date to a standard DATE format.
-  Extracted week_number, month_number, and calendar_year.
-  Used CASE statements to map segment codes (e.g., 1 = Young Adults, C = Couples).
-  Replaced all null strings with 'UNKNOWN'.
-  Calculated avg_transaction as sales / transactions.
+1. Converted week_date to a standard DATE format.
+2. Extracted week_number, month_number, and calendar_year.
+3. Used CASE statements to map segment codes (e.g., 1 = Young Adults, C = Couples).
+4. Replaced all null strings with 'UNKNOWN'.
+5. Calculated avg_transaction as sales / transactions.
 
 ### Section 2: Data Exploration
 
---1. What day of the week is used for each week_date value?
+1. What day of the week is used for each week_date value?
 
 SELECT DISTINCT TO_CHAR(week_date, 'Day') FROM data_mart.clean_weekly_sales;
 
---2. What range of week numbers are missing from the dataset?
+2. What range of week numbers are missing from the dataset?
 
 SELECT series_week from generate_series(1,52) AS series_week
 
@@ -29,7 +29,7 @@ FROM data_mart.clean_weekly_sales
 ORDER BY series_week;
 
 
---3. How many total transactions were there for each year in the dataset?
+3. How many total transactions were there for each year in the dataset?
 
 SELECT calendar_year, COUNT(*) transactions_per_year 
 
@@ -38,7 +38,7 @@ FROM data_mart.clean_weekly_sales
 GROUP BY calendar_year;
 
 
---4. What is the total sales for each region for each month?
+4. What is the total sales for each region for each month?
 
 SELECT region, month_number, SUM(sales) total_sales
 
@@ -49,7 +49,7 @@ GROUP BY region, month_number
 ORDER BY region, month_number;
 
 
---5. What is the total count of transactions for each platform
+5. What is the total count of transactions for each platform
 
 SELECT platform, SUM(transactions) total_transactions
 
@@ -60,7 +60,7 @@ GROUP BY platform
 ORDER BY platform;
 
 
---6. What is the percentage of sales for Retail vs Shopify for each month?
+6. What is the percentage of sales for Retail vs Shopify for each month?
 
 SELECT 
 
@@ -71,7 +71,7 @@ ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Shopify' THEN sales ELSE 0 END))/SUM(s
 FROM data_mart.clean_weekly_sales;
 
 
---OR
+OR
 
 SELECT platform,
 
@@ -84,38 +84,61 @@ FROM data_mart.clean_weekly_sales
 GROUP BY platform;
 
 
---7. What is the percentage of sales by demographic for each year in the dataset?
+7. What is the percentage of sales by demographic for each year in the dataset?
 
 SELECT region, calendar_year,
+
 	SUM(sales) AS toal_sales, 
+	
     ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
+	
 FROM data_mart.clean_weekly_sales
+
 GROUP BY region, calendar_year
+
 ORDER BY region, calendar_year;
 
---8. Which age_band and demographic values contribute the most to Retail sales?
+
+8. Which age_band and demographic values contribute the most to Retail sales?
 
 SELECT region,
+
 	SUM(sales) AS toal_sales, 
+	
     ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
+	
 FROM data_mart.clean_weekly_sales WHERE platform LIKE 'Retail'
+
 GROUP BY region
+
 ORDER BY sales_percentage DESC;
+
 
 SELECT age_band,
+
 	SUM(sales) AS toal_sales, 
+	
     ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
+	
 FROM data_mart.clean_weekly_sales WHERE platform LIKE 'Retail'
+
 GROUP BY age_band 
+
 ORDER BY sales_percentage DESC;
 
---9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
+
+9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 
 SELECT calendar_year, platform,
+
 	AVG(avg_transaction) AS avg_transactions_per_year
+	
 FROM data_mart.clean_weekly_sales
+
 GROUP BY calendar_year, platform
+
 ORDER BY calendar_year;
+
 
 ### Section 1: Data Cleansing
 
