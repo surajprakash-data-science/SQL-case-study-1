@@ -1,4 +1,4 @@
-# 1. The Cleaning Steps:
+--The Cleaning Steps:
 CREATE TABLE data_mart.clean_weekly_sales AS
 SELECT 
 	TO_DATE(week_date, 'DD/MM/YY') AS week_date,
@@ -30,33 +30,42 @@ FROM data_mart.weekly_sales;
 
 SELECT * FROM data_mart.clean_weekly_sales LIMIT 5;
 
-# 2. Data Exploration:
+--Data Exploration:
+
+--1. What day of the week is used for each week_date value?
 SELECT DISTINCT TO_CHAR(week_date, 'Day') FROM data_mart.clean_weekly_sales;
 
+--2. What range of week numbers are missing from the dataset?
 SELECT series_week from generate_series(1,52) AS series_week 
 EXCEPT
 SELECT DISTINCT week_number
 FROM data_mart.clean_weekly_sales
 ORDER BY series_week;
 
+--3. How many total transactions were there for each year in the dataset?
 SELECT calendar_year, COUNT(*) transactions_per_year 
 FROM data_mart.clean_weekly_sales
 GROUP BY calendar_year;
 
+--4. What is the total sales for each region for each month?
 SELECT region, month_number, SUM(sales) total_sales
 FROM data_mart.clean_weekly_sales
 GROUP BY region, month_number
 ORDER BY region, month_number;
 
+--5. What is the total count of transactions for each platform
 SELECT platform, SUM(transactions) total_transactions
 FROM data_mart.clean_weekly_sales
 GROUP BY platform
 ORDER BY platform;
 
+--6. What is the percentage of sales for Retail vs Shopify for each month?
 SELECT 
 	ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Retail' THEN sales Else 0 END))/SUM(sales),2) retail_sales,
     ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Shopify' THEN sales ELSE 0 END))/SUM(sales),2) shopify_sales
 FROM data_mart.clean_weekly_sales;
+
+--OR
 
 SELECT platform,
 	SUM(sales) AS toal_sales, 
@@ -64,6 +73,7 @@ SELECT platform,
 FROM data_mart.clean_weekly_sales
 GROUP BY platform;
 
+--7. What is the percentage of sales by demographic for each year in the dataset?
 SELECT region, calendar_year,
 	SUM(sales) AS toal_sales, 
     ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
@@ -71,6 +81,7 @@ FROM data_mart.clean_weekly_sales
 GROUP BY region, calendar_year
 ORDER BY region, calendar_year;
 
+--8. Which age_band and demographic values contribute the most to Retail sales?
 SELECT region,
 	SUM(sales) AS toal_sales, 
     ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
@@ -85,13 +96,15 @@ FROM data_mart.clean_weekly_sales WHERE platform LIKE 'Retail'
 GROUP BY age_band 
 ORDER BY sales_percentage DESC;
 
+--9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 SELECT calendar_year, platform,
 	AVG(avg_transaction) AS avg_transactions_per_year
 FROM data_mart.clean_weekly_sales
 GROUP BY calendar_year, platform
 ORDER BY calendar_year;
 
-# 3. Before & After Analysis:
+
+--Before & After Analysis
 WITH before_change AS (
 SELECT *, ROW_NUMBER() OVER(ORDER BY week_date ASC) as row_id 
 FROM data_mart.clean_weekly_sales
