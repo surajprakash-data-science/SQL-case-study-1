@@ -208,9 +208,10 @@ Using this analysis approach - answer the following questions:
 
 ## Key Insights & Conclusion
 Through this SQL deep dive, several critical business insights emerged:
-Impact of Change: The sustainable packaging change saw a slight reduction in sales in the immediate 4-week period. This allowed the business to discuss whether this was due to customer sentiment or external supply chain factors.
-Platform Disparity: Retail transactions significantly outweigh Shopify, but Shopify's avg_transaction size provides an interesting opportunity for high-value growth.
-The "Unknown" Factor: A large portion of the sales come from the 'Unknown' segment. This highlights a massive opportunity for Data Mart to improve their loyalty program and data collection at the Point of Sale.
+
+	Impact of Change: The sustainable packaging change saw a slight reduction in sales in the immediate 4-week period. This allowed the business to discuss whether this was due to customer sentiment or external supply chain factors.
+	Platform Disparity: Retail transactions significantly outweigh Shopify, but Shopify's avg_transaction size provides an interesting opportunity for high-value growth.
+	The "Unknown" Factor: A large portion of the sales come from the 'Unknown' segment. This highlights a massive opportunity for Data Mart to improve their loyalty program and data collection at the Point of Sale.
 
 ## How To Run The Code
 1. Copy the queries in "sql_queries.sql" file.
