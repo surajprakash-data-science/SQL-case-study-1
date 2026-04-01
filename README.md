@@ -18,46 +18,71 @@ SELECT DISTINCT TO_CHAR(week_date, 'Day') FROM data_mart.clean_weekly_sales;
 
 --2. What range of week numbers are missing from the dataset?
 
-SELECT series_week from generate_series(1,52) AS series_week 
+SELECT series_week from generate_series(1,52) AS series_week
+
 EXCEPT
+
 SELECT DISTINCT week_number
+
 FROM data_mart.clean_weekly_sales
+
 ORDER BY series_week;
+
 
 --3. How many total transactions were there for each year in the dataset?
 
 SELECT calendar_year, COUNT(*) transactions_per_year 
+
 FROM data_mart.clean_weekly_sales
+
 GROUP BY calendar_year;
+
 
 --4. What is the total sales for each region for each month?
 
 SELECT region, month_number, SUM(sales) total_sales
+
 FROM data_mart.clean_weekly_sales
+
 GROUP BY region, month_number
+
 ORDER BY region, month_number;
+
 
 --5. What is the total count of transactions for each platform
 
 SELECT platform, SUM(transactions) total_transactions
+
 FROM data_mart.clean_weekly_sales
+
 GROUP BY platform
+
 ORDER BY platform;
+
 
 --6. What is the percentage of sales for Retail vs Shopify for each month?
 
 SELECT 
-	ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Retail' THEN sales Else 0 END))/SUM(sales),2) retail_sales,
-    ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Shopify' THEN sales ELSE 0 END))/SUM(sales),2) shopify_sales
+
+ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Retail' THEN sales Else 0 END))/SUM(sales),2) retail_sales,
+	
+ROUND(100.0*(SUM(CASE WHEN platform LIKE 'Shopify' THEN sales ELSE 0 END))/SUM(sales),2) shopify_sales
+	
 FROM data_mart.clean_weekly_sales;
+
 
 --OR
 
 SELECT platform,
-	SUM(sales) AS toal_sales, 
-    ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
+
+SUM(sales) AS toal_sales, 
+	
+ROUND(100.0*SUM(sales)/SUM(SUM(sales)) OVER (),2) sales_percentage
+	
 FROM data_mart.clean_weekly_sales
+
 GROUP BY platform;
+
 
 --7. What is the percentage of sales by demographic for each year in the dataset?
 
