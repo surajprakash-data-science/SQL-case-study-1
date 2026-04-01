@@ -140,7 +140,7 @@ OR
 		ORDER BY calendar_year;
 
 
-### Section 1: Data Cleansing
+### Section 1: Before & After Analysis.
 
 This technique is usually used when we inspect an important event and want to inspect the impact before and after a certain point in time.
 Taking the week_date value of 2020-06-15 as the baseline week where the Data Mart sustainable packaging changes came into effect.
